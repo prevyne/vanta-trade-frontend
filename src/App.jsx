@@ -3,14 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Link, Outlet, Navigate } from '
 import { Loader2, Menu, X } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
-// Page Imports
+// Components & Pages
+import Footer from './components/ui/Footer';
 import Landing from './pages/public/Landing';
 import Dashboard from './pages/dashboard/Dashboard';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-
-const Evaluations = () => <div className="p-8 pt-24 text-center text-white">Evaluations Breakdown</div>;
-const Rules = () => <div className="p-8 pt-24 text-center text-white">Trading Rules & IP</div>;
 
 const ProtectedRoute = ({ children }) => {
   const { currentUser } = useAuth();
@@ -19,11 +17,11 @@ const ProtectedRoute = ({ children }) => {
 };
 
 /* =========================================
-   PUBLIC LAYOUT WRAPPER (Mobile Responsive)
+   PUBLIC LAYOUT WRAPPER
    ========================================= */
 const PublicLayout = () => {
   const { currentUser } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMobileMenuOpen(false);
 
@@ -81,9 +79,13 @@ const PublicLayout = () => {
         </div>
       )}
 
+      {/* Main Viewport */}
       <main className="flex-grow relative z-10 flex flex-col">
         <Outlet />
       </main>
+
+      {/* Dynamic Footer */}
+      <Footer />
     </div>
   );
 };
@@ -106,13 +108,16 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public Routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Landing />} />
-          <Route path="/evaluations" element={<Evaluations />} />
-          <Route path="/rules" element={<Rules />} />
         </Route>
+
+        {/* Auth Routes */}
         <Route path="/login" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login />} />
         <Route path="/register" element={currentUser ? <Navigate to="/dashboard" replace /> : <Register />} />
+
+        {/* Secure Route */}
         <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       </Routes>
     </Router>
