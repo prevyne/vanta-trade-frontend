@@ -2,7 +2,7 @@
 
 A high-performance, institutional-grade frontend web application built for **Vanta Trade**, a modern proprietary trading firm. The platform features a dark-themed, glassmorphic UI, real-time market data integration, a secure client dashboard, and seamless payment/authentication flows.
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework:** [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) (CSS-variable driven, no config file needed)
@@ -14,7 +14,7 @@ A high-performance, institutional-grade frontend web application built for **Van
 
 ---
 
-## 🏗️ Project Architecture & Features
+## Project Architecture & Features
 
 The application is split into two distinct layout paradigms: the **Public Storefront** and the **Secure Dashboard**, bridged by a robust Global Auth Context.
 

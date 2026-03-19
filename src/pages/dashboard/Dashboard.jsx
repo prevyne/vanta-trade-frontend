@@ -36,14 +36,22 @@ const Dashboard = () => {
     }
   };
 
+  // Helper to get initials
   const getInitials = () => {
     if (userData?.firstName && userData?.lastName) return `${userData.firstName[0]}${userData.lastName[0]}`.toUpperCase();
     return currentUser?.email?.[0].toUpperCase() || 'VT';
   };
 
+  // NEW: Helper to get the full name
+  const getFullName = () => {
+    if (userData?.firstName && userData?.lastName) {
+      return `${userData.firstName} ${userData.lastName}`;
+    }
+    return currentUser?.displayName || 'Vanta Trader';
+  };
+
   const getAccountId = () => currentUser?.uid?.substring(0, 6).toUpperCase() || '000000';
 
-  // Navigation Array with Terminal Included
   const navLinks = [
     { name: 'Overview', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Trading Terminal', path: '/dashboard/terminal', icon: <Monitor size={20} /> },
@@ -134,12 +142,19 @@ const Dashboard = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 md:gap-4 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             <button className="p-2 text-text-muted hover:text-white relative hidden sm:block">
               <Bell size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-blue-300 flex items-center justify-center text-sm font-bold shadow-lg text-white">
+            
+            {/* UPDATED: Full Name Display (Hidden on very small mobile screens to save space) */}
+            <div className="hidden md:flex flex-col items-end text-right mr-1">
+              <span className="text-sm font-bold text-white">{getFullName()}</span>
+              <span className="text-xs text-text-muted">Pro Trader</span>
+            </div>
+
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-blue-300 flex items-center justify-center text-sm font-bold shadow-lg text-white">
               {getInitials()}
             </div>
           </div>
