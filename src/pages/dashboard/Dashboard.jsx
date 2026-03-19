@@ -1,9 +1,9 @@
 import React from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Target, CreditCard, Settings as SettingsIcon, 
-  LogOut, Bell, ChevronDown 
+  LogOut, Bell, ChevronDown, ArrowDownToLine 
 } from 'lucide-react';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 
 // Firebase & Context
 import { auth, signOut } from '../../config/firebase';
@@ -14,6 +14,7 @@ import Overview from './Overview';
 import ActiveChallenge from './ActiveChallenge';
 import Payouts from './Payouts';
 import Settings from './Settings';
+import Deposit from './Deposit';
 
 const Dashboard = () => {
   const location = useLocation();
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const navLinks = [
     { name: 'Overview', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Active Challenge', path: '/dashboard/challenge', icon: <Target size={20} /> },
+    { name: 'Deposit Funds', path: '/dashboard/deposit', icon: <ArrowDownToLine size={20} /> },
     { name: 'Payouts', path: '/dashboard/payouts', icon: <CreditCard size={20} /> },
     { name: 'Settings', path: '/dashboard/settings', icon: <SettingsIcon size={20} /> },
   ];
@@ -127,6 +129,7 @@ const Dashboard = () => {
           <Routes>
             <Route path="/" element={<Overview />} />
             <Route path="/challenge" element={<ActiveChallenge />} />
+            <Route path="/deposit" element={<Deposit />} />
             <Route path="/payouts" element={<Payouts />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>

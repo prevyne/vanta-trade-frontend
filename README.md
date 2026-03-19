@@ -2,41 +2,45 @@
 
 A high-performance, institutional-grade frontend web application built for **Vanta Trade**, a modern proprietary trading firm. The platform features a dark-themed, glassmorphic UI, real-time market data integration, a secure client dashboard, and seamless payment/authentication flows.
 
-## TECH STACK
+## Tech Stack
 
 - **Framework:** [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) (CSS-variable driven, no config file needed)
 - **Routing:** [React Router v6](https://reactrouter.com/) (with Protected Routes)
+- **State Management:** React Context API (Global Auth & Profile State)
 - **Authentication & Database:** [Firebase](https://firebase.google.com/) (Auth + Firestore)
 - **Payments:** [Paystack](https://paystack.com/) (`react-paystack` integration)
 - **Icons & Widgets:** [Lucide React](https://lucide.dev/), [react-ts-tradingview-widgets](https://www.npmjs.com/package/react-ts-tradingview-widgets)
 
 ---
 
-## PROJECT ARCHITECTURE AND FEATURES
+## Project Architecture & Features
 
-The application is split into two distinct layout paradigms: the **Public Storefront** and the **Secure Dashboard**.
+The application is split into two distinct layout paradigms: the **Public Storefront** and the **Secure Dashboard**, bridged by a robust Global Auth Context.
 
-### 1. Public Storefront (`/`)
+### 1. Global Auth & Profile State
+- **AuthContext:** A global state provider that listens to Firebase Auth changes, automatically fetches the logged-in user's Firestore profile data, and distributes it across the application.
+- **Dynamic Routing:** Intercepts unauthorized users and seamlessly redirects authenticated users away from public auth forms.
+
+### 2. Public Storefront (`/`)
 - **Landing Page:** High-conversion hero section, TradingView ticker tape, and interactive feature grids.
 - **Investment Plans:** Dynamic pricing cards integrated directly with the Paystack checkout modal.
-- **Navigation:** Smart navbar that detects Firebase Auth state (swaps "Login" to "Go to Dashboard").
+- **Navigation:** Smart navbar that detects global Auth state (swaps "Login" to "Go to Dashboard").
 
-### 2. Authentication (`/login`, `/register`)
+### 3. Authentication (`/login`, `/register`)
 - **Firebase Auth:** Full Email/Password and Google OAuth popup integration.
-- **Firestore Provisioning:** Automatically creates user documents in the database upon registration.
-- **Error Handling:** Clean, user-friendly UI alerts for invalid credentials or existing accounts.
+- **Firestore Provisioning:** Automatically creates user documents in the database upon registration (Name, Email, Role, Balance).
 
-### 3. Secure Dashboard (`/dashboard/*`)
-Protected behind a higher-order component that verifies the Firebase session before rendering.
-- **Overview:** Real-time balance, equity, and drawdown tracking against profit targets.
+### 4. Secure Dashboard (`/dashboard/*`)
+- **Overview & Header:** Dynamically renders user initials and account IDs based on Firestore profiles.
 - **Active Challenge:** Deep-dive analytics featuring a custom SVG equity curve chart and trade history table.
-- **Payouts:** A simulated real-time withdrawal portal (prepped for backend Webhooks) to manage profit splits via Crypto or Bank Wire.
-- **Settings:** Tabbed interface for managing Profile/KYC details, 2FA Security, and Notification preferences.
+- **Deposit Funds (Pay-ins):** Secure portal for users to fund their live trading accounts instantly via Paystack using quick-select amounts or custom values.
+- **Payouts (Withdrawals):** A simulated real-time withdrawal portal (prepped for backend Webhooks) to manage profit splits.
+- **Settings:** Dynamically populated profile forms displaying real user data and KYC verification status.
 
 ---
 
-## DIRECTORY STRUCTURE
+## Folder Structure
 
 ```text
 vanta_frontend/
@@ -46,26 +50,29 @@ vanta_frontend/
 │   │       └── PaystackCheckout.jsx    # Reusable payment modal component
 │   ├── config/
 │   │   └── firebase.js                 # Firebase initialization & exports
+│   ├── context/
+│   │   └── AuthContext.jsx             # Global user state & Firestore fetching
 │   ├── pages/
 │   │   ├── auth/
 │   │   │   ├── Login.jsx               # Firebase sign-in
 │   │   │   └── Register.jsx            # Firebase sign-up & Firestore insert
 │   │   ├── dashboard/
 │   │   │   ├── ActiveChallenge.jsx     # Analytics & SVG Chart
-│   │   │   ├── Dashboard.jsx           # Secure layout wrapper & Sidebar
+│   │   │   ├── Dashboard.jsx           # Secure layout wrapper & Dynamic Header
+│   │   │   ├── Deposit.jsx             # Account funding & Paystack integration
 │   │   │   ├── Overview.jsx            # Core metrics & progress bars
 │   │   │   ├── Payouts.jsx             # Withdrawal requests
-│   │   │   └── Settings.jsx            # User profile & security
+│   │   │   └── Settings.jsx            # Dynamic User profile & security
 │   │   └── public/
 │   │       └── Landing.jsx             # Main marketing page
 │   ├── App.jsx                         # Main Router & Layout logic
 │   ├── index.css                       # Tailwind v4 variables & custom utilities
-│   └── main.jsx                        # React root execution
+│   └── main.jsx                        # React root execution & Context Provider
 ├── .env                                # Local environment secrets (ignored by Git)
 ├── vite.config.js                      # Vite & Tailwind plugin config
 └── package.json
- 
- # GETTING STARTED
+
+# Getting Started
 1. Prerequisites
 Ensure you have Node.js (v18+) installed on your machine.
 
@@ -95,9 +102,3 @@ Start the Vite hot-reloading server:
 
 Bash
 npm run dev
-Open your browser and navigate to http://localhost:5173.
-
-# NOTES FOR BACKEND INTEGRATION
-Payments: The Paystack frontend implementation securely handles the UI popup, but successful payments must be verified on the backend via Webhooks before provisioning a trading account.
-
-Real-Time Payouts: The /dashboard/payouts view currently uses a simulated setTimeout to mimic a status change. When integrating a backend (e.g., Express/Node.js), replace this with a WebSocket or Server-Sent Events (SSE) listener.
