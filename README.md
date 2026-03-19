@@ -2,7 +2,7 @@
 
 A high-performance, institutional-grade frontend web application built for **Vanta Trade**, a modern proprietary trading firm. The platform features a dark-themed, glassmorphic UI, real-time market data integration, a secure client dashboard, and seamless payment/authentication flows.
 
-## Tech Stack
+## 🚀 Tech Stack
 
 - **Framework:** [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) (CSS-variable driven, no config file needed)
@@ -14,7 +14,7 @@ A high-performance, institutional-grade frontend web application built for **Van
 
 ---
 
-## Project Architecture & Features
+## 🏗️ Project Architecture & Features
 
 The application is split into two distinct layout paradigms: the **Public Storefront** and the **Secure Dashboard**, bridged by a robust Global Auth Context.
 
@@ -25,7 +25,7 @@ The application is split into two distinct layout paradigms: the **Public Storef
 ### 2. Public Storefront (`/`)
 - **Landing Page:** High-conversion hero section, TradingView ticker tape, and interactive feature grids.
 - **Investment Plans:** Dynamic pricing cards integrated directly with the Paystack checkout modal.
-- **Navigation:** Smart navbar that detects global Auth state (swaps "Login" to "Go to Dashboard").
+- **Navigation:** Smart navbar that detects global Auth state (swaps "Login" to "Go to Dashboard") and features a mobile-responsive drawer.
 
 ### 3. Authentication (`/login`, `/register`)
 - **Firebase Auth:** Full Email/Password and Google OAuth popup integration.
@@ -33,51 +33,20 @@ The application is split into two distinct layout paradigms: the **Public Storef
 
 ### 4. Secure Dashboard (`/dashboard/*`)
 - **Overview & Header:** Dynamically renders user initials and account IDs based on Firestore profiles.
-- **Active Challenge:** Deep-dive analytics featuring a custom SVG equity curve chart and trade history table.
-- **Deposit Funds (Pay-ins):** Secure portal for users to fund their live trading accounts instantly via Paystack using quick-select amounts or custom values.
-- **Payouts (Withdrawals):** A simulated real-time withdrawal portal (prepped for backend Webhooks) to manage profit splits.
+- **Trading Terminal:** Embedded real-time TradingView charting engine alongside a custom mock-order execution panel.
+- **Performance Analytics:** Deep-dive journal featuring a custom SVG equity curve chart, win rate/profit factor tracking, and trade history table.
+- **Deposit Funds (Pay-ins):** Secure portal for users to fund their live trading accounts instantly via Paystack.
+- **Payouts (Withdrawals):** A simulated real-time withdrawal portal to manage profit splits.
 - **Settings:** Dynamically populated profile forms displaying real user data and KYC verification status.
 
 ---
 
-## Folder Structure
-
-```text
-vanta_frontend/
-├── src/
-│   ├── components/
-│   │   └── ui/
-│   │       └── PaystackCheckout.jsx    # Reusable payment modal component
-│   ├── config/
-│   │   └── firebase.js                 # Firebase initialization & exports
-│   ├── context/
-│   │   └── AuthContext.jsx             # Global user state & Firestore fetching
-│   ├── pages/
-│   │   ├── auth/
-│   │   │   ├── Login.jsx               # Firebase sign-in
-│   │   │   └── Register.jsx            # Firebase sign-up & Firestore insert
-│   │   ├── dashboard/
-│   │   │   ├── ActiveChallenge.jsx     # Analytics & SVG Chart
-│   │   │   ├── Dashboard.jsx           # Secure layout wrapper & Dynamic Header
-│   │   │   ├── Deposit.jsx             # Account funding & Paystack integration
-│   │   │   ├── Overview.jsx            # Core metrics & progress bars
-│   │   │   ├── Payouts.jsx             # Withdrawal requests
-│   │   │   └── Settings.jsx            # Dynamic User profile & security
-│   │   └── public/
-│   │       └── Landing.jsx             # Main marketing page
-│   ├── App.jsx                         # Main Router & Layout logic
-│   ├── index.css                       # Tailwind v4 variables & custom utilities
-│   └── main.jsx                        # React root execution & Context Provider
-├── .env                                # Local environment secrets (ignored by Git)
-├── vite.config.js                      # Vite & Tailwind plugin config
-└── package.json
-
-# Getting Started
+##  Getting Started
 1. Prerequisites
 Ensure you have Node.js (v18+) installed on your machine.
 
 2. Installation
-Clone the repository and install the dependencies. Note: The --legacy-peer-deps flag is required due to react-paystack peer-dependency mismatches with React 19.
+Clone the repository and install the dependencies. Note: The --legacy-peer-deps flag is required due to react-paystack and react-ts-tradingview-widgets peer-dependency mismatches with React 19.
 
 Bash
 git clone <repository-url>
@@ -97,8 +66,36 @@ VITE_FIREBASE_APP_ID=your_app_id
 
 # Paystack Configuration
 VITE_PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_key_here
-4. Running the Development Server
-Start the Vite hot-reloading server:
 
-Bash
-npm run dev
+## Folder Structure
+
+```text
+vanta_frontend/
+├── src/
+│   ├── components/
+│   │   └── ui/
+│   │       └── PaystackCheckout.jsx    # Reusable payment modal component
+│   ├── config/
+│   │   └── firebase.js                 # Firebase initialization & exports
+│   ├── context/
+│   │   └── AuthContext.jsx             # Global user state & Firestore fetching
+│   ├── pages/
+│   │   ├── auth/
+│   │   │   ├── Login.jsx               # Firebase sign-in
+│   │   │   └── Register.jsx            # Firebase sign-up & Firestore insert
+│   │   ├── dashboard/
+│   │   │   ├── Analytics.jsx           # Performance metrics & SVG Chart
+│   │   │   ├── Dashboard.jsx           # Secure layout wrapper & Sidebar
+│   │   │   ├── Deposit.jsx             # Account funding & Paystack integration
+│   │   │   ├── Overview.jsx            # Core metrics & progress bars
+│   │   │   ├── Payouts.jsx             # Withdrawal requests
+│   │   │   ├── Settings.jsx            # Dynamic User profile & security
+│   │   │   └── Terminal.jsx            # TradingView chart & execution UI
+│   │   └── public/
+│   │       └── Landing.jsx             # Main marketing page
+│   ├── App.jsx                         # Main Router & Layout logic
+│   ├── index.css                       # Tailwind v4 variables & custom utilities
+│   └── main.jsx                        # React root execution & Context Provider
+├── .env                                # Local environment secrets (ignored by Git)
+├── vite.config.js                      # Vite & Tailwind plugin config
+└── package.json
