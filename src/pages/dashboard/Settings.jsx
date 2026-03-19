@@ -4,16 +4,22 @@ import {
   CheckCircle2, AlertTriangle, Smartphone 
 } from 'lucide-react';
 
+// Import our global Auth Context
+import { useAuth } from '../../context/AuthContext';
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  
+  // Pull the dynamic data from Firebase
+  const { currentUser, userData } = useAuth();
 
-  // Mock User Data
+  // Map the Firebase data to our UI, with safe fallbacks
   const user = {
-    firstName: 'John',
-    lastName: 'Smith',
-    email: 'john.smith@example.com',
-    phone: '+1 (555) 019-2834',
-    kycStatus: 'Verified',
+    firstName: userData?.firstName || '',
+    lastName: userData?.lastName || '',
+    email: currentUser?.email || '',
+    phone: userData?.phone || '', // Will be empty until they add one
+    kycStatus: userData?.kycStatus || 'Unverified',
   };
 
   const tabs = [
@@ -64,8 +70,12 @@ const Settings = () => {
                   <h2 className="text-xl font-bold text-white mb-1">Personal Details</h2>
                   <p className="text-sm text-text-muted">Your basic account information.</p>
                 </div>
-                {/* KYC Badge */}
-                <div className="flex items-center gap-2 bg-success/10 border border-success/20 px-3 py-1.5 rounded-lg text-success text-sm font-bold">
+                {/* Dynamic KYC Badge */}
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold ${
+                  user.kycStatus === 'Verified' 
+                    ? 'bg-success/10 border border-success/20 text-success' 
+                    : 'bg-yellow-500/10 border border-yellow-500/20 text-yellow-500'
+                }`}>
                   <Shield size={16} /> KYC {user.kycStatus}
                 </div>
               </div>
@@ -74,23 +84,43 @@ const Settings = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-text-muted mb-2">First Name</label>
-                    <input type="text" defaultValue={user.firstName} disabled className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" />
+                    <input 
+                      type="text" 
+                      defaultValue={user.firstName} 
+                      disabled 
+                      className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" 
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-text-muted mb-2">Last Name</label>
-                    <input type="text" defaultValue={user.lastName} disabled className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" />
+                    <input 
+                      type="text" 
+                      defaultValue={user.lastName} 
+                      disabled 
+                      className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" 
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-text-muted mb-2">Email Address</label>
-                  <input type="email" defaultValue={user.email} disabled className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" />
+                  <input 
+                    type="email" 
+                    defaultValue={user.email} 
+                    disabled 
+                    className="w-full bg-surface border border-white/5 rounded-lg px-4 py-3 text-text-muted cursor-not-allowed opacity-70" 
+                  />
                   <p className="text-xs text-text-muted mt-2">To change your name or email, please contact Vanta Support.</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-text-muted mb-2">Phone Number</label>
-                  <input type="tel" defaultValue={user.phone} className="w-full bg-surface/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary text-white" />
+                  <input 
+                    type="tel" 
+                    defaultValue={user.phone} 
+                    placeholder="+1 (555) 000-0000"
+                    className="w-full bg-surface/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary text-white" 
+                  />
                 </div>
 
                 <div className="pt-4">
@@ -165,7 +195,6 @@ const Settings = () => {
                       <p className="text-xs text-text-muted">{alert.desc}</p>
                     </div>
                     
-                    {/* Pure Tailwind Toggle Mockup */}
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" className="sr-only peer" defaultChecked={alert.defaultChecked} />
                       <div className="w-11 h-6 bg-surface border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>

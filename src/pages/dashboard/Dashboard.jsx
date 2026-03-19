@@ -5,8 +5,9 @@ import {
   LogOut, Bell, ChevronDown 
 } from 'lucide-react';
 
-// Firebase Auth
+// Firebase & Context
 import { auth, signOut } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
 
 // Page Imports
 import Overview from './Overview';
@@ -15,9 +16,11 @@ import Payouts from './Payouts';
 import Settings from './Settings';
 
 const Dashboard = () => {
-  // ALL HOOKS MUST LIVE HERE, INSIDE THE COMPONENT
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Pull dynamic data from our global context
+  const { userData, currentUser } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -26,6 +29,19 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error signing out: ", error);
     }
+  };
+
+  // Helper to generate dynamic initials
+  const getInitials = () => {
+    if (userData?.firstName && userData?.lastName) {
+      return `${userData.firstName[0]}${userData.lastName[0]}`.toUpperCase();
+    }
+    return currentUser?.email?.[0].toUpperCase() || 'VT';
+  };
+
+  // Generate a mock Account ID from their unique Firebase UID
+  const getAccountId = () => {
+    return currentUser?.uid?.substring(0, 6).toUpperCase() || '000000';
   };
 
   const navLinks = [
@@ -67,7 +83,6 @@ const Dashboard = () => {
         </nav>
 
         <div className="p-4 border-t border-white/5">
-          {/* Logout Button wired up here */}
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
@@ -87,7 +102,10 @@ const Dashboard = () => {
           <div className="flex items-center gap-4">
             <button className="flex items-center gap-2 bg-surface px-4 py-2 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-              <span className="font-medium text-sm">Account #88291 ($100k)</span>
+              {/* Dynamic Account Details injected here */}
+              <span className="font-medium text-sm">
+                Account #{getAccountId()} (${(userData?.accountSize || 0).toLocaleString()})
+              </span>
               <ChevronDown size={16} className="text-text-muted" />
             </button>
           </div>
@@ -97,8 +115,9 @@ const Dashboard = () => {
               <Bell size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
             </button>
+            {/* Dynamic Initials injected here */}
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-blue-300 flex items-center justify-center text-sm font-bold shadow-lg text-white">
-              JS
+              {getInitials()}
             </div>
           </div>
         </header>
