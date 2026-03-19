@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* 1. The Insidr Design System Variables */
+@theme {
+  --color-background: #0f111a;
+  --color-surface: #1a1d27;
+  --color-surface-hover: #232736;
+  --color-primary: #3b82f6;
+  --color-text-main: #ffffff;
+  --color-text-muted: #94a3b8;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* 2. Base HTML Defaults */
+@layer base {
+  body {
+    @apply bg-background text-text-main font-sans antialiased overflow-x-hidden;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-hover rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+}
+
+/* 3. Reusable Insidr Utilities */
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-white/5 shadow-xl;
+  }
+  
+  .glow-bg {
+    @apply absolute w-full h-full bg-primary/10 blur-[100px] -z-10 rounded-full pointer-events-none;
+  }
+}
