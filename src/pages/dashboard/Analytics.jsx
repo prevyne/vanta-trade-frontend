@@ -1,10 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, Percent, BarChart2, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer 
+} from 'recharts';
 
 const Analytics = () => {
   const { userData } = useAuth();
-  const currentBalance = userData?.accountSize || 0;
+  const baseBalance = userData?.accountSize || 100000;
+
+  // Timeframe Filter State
+  const [activeFilter, setActiveFilter] = useState('1M');
+
+  // Mock Data Sets for different timeframes
+  const chartData = {
+    '1D': [
+      { date: '09:00', balance: baseBalance },
+      { date: '11:00', balance: baseBalance + 120 },
+      { date: '13:00', balance: baseBalance - 50 },
+      { date: '15:00', balance: baseBalance + 340 },
+      { date: '17:00', balance: baseBalance + 420 },
+    ],
+    '1W': [
+      { date: 'Mon', balance: baseBalance },
+      { date: 'Tue', balance: baseBalance + 450 },
+      { date: 'Wed', balance: baseBalance + 200 },
+      { date: 'Thu', balance: baseBalance + 890 },
+      { date: 'Fri', balance: baseBalance + 1240 },
+    ],
+    '1M': [
+      { date: 'Oct 01', balance: baseBalance },
+      { date: 'Oct 08', balance: baseBalance + 800 },
+      { date: 'Oct 15', balance: baseBalance + 650 },
+      { date: 'Oct 22', balance: baseBalance + 1500 },
+      { date: 'Oct 29', balance: baseBalance + 2400 },
+    ],
+    '1Y': [
+      { date: 'Jan', balance: baseBalance },
+      { date: 'Apr', balance: baseBalance + 4000 },
+      { date: 'Jul', balance: baseBalance + 3200 },
+      { date: 'Oct', balance: baseBalance + 8500 },
+      { date: 'Dec', balance: baseBalance + 12000 },
+    ],
+    'ALL': [
+      { date: '2023', balance: baseBalance },
+      { date: '2024', balance: baseBalance + 15000 },
+      { date: '2025', balance: baseBalance + 28000 },
+    ]
+  };
 
   // Mock Performance Data
   const stats = [
@@ -13,6 +56,21 @@ const Analytics = () => {
     { label: 'Best Trade', value: '+$1,240.00', icon: <ArrowUpRight size={18} className="text-success" />, trend: 'EURUSD' },
     { label: 'Worst Trade', value: '-$450.00', icon: <ArrowDownRight size={18} className="text-danger" />, trend: 'GBPUSD' },
   ];
+
+  // Custom Tooltip for the Chart Hover state
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="glass-panel border border-white/10 p-3 rounded-lg shadow-xl bg-surface/90 backdrop-blur-md">
+          <p className="text-text-muted text-xs mb-1">{label}</p>
+          <p className="text-white font-bold">
+            ${payload[0].value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-10">
@@ -37,44 +95,70 @@ const Analytics = () => {
         ))}
       </div>
 
-      {/* Equity Curve Chart Area */}
+      {/* Dynamic Equity Curve Chart Area */}
       <div className="glass-panel p-6 rounded-2xl border border-white/5">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/5">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Activity size={20} className="text-primary" /> Equity Curve
           </h2>
-          <div className="flex gap-2">
-            {['1W', '1M', 'ALL'].map(period => (
-              <button key={period} className="px-3 py-1 text-xs font-medium rounded bg-surface border border-white/10 hover:text-white transition-colors">
+          
+          {/* Timeframe Filter Buttons */}
+          <div className="flex gap-2 bg-surface/50 p-1 rounded-lg border border-white/5 w-fit">
+            {['1D', '1W', '1M', '1Y', 'ALL'].map(period => (
+              <button 
+                key={period} 
+                onClick={() => setActiveFilter(period)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
+                  activeFilter === period 
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'text-text-muted hover:text-white hover:bg-white/5'
+                }`}
+              >
                 {period}
               </button>
             ))}
           </div>
         </div>
         
-        {/* Simple SVG Chart Representation */}
-        <div className="h-64 w-full relative flex items-end">
-          {/* Grid lines */}
-          <div className="absolute inset-0 flex flex-col justify-between border-l border-b border-white/10 pb-6 pl-2">
-            {[4, 3, 2, 1, 0].map((line) => (
-              <div key={line} className="w-full border-t border-white/5 relative">
-                <span className="absolute -left-12 -top-2 text-[10px] text-text-muted">
-                  ${(currentBalance + line * 500).toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-          {/* Mock Line (Replaces external chart library for now) */}
-          <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <path d="M0,80 Q10,75 20,60 T40,50 T60,30 T80,40 T100,10" fill="none" stroke="#3b82f6" strokeWidth="2" />
-            <path d="M0,80 Q10,75 20,60 T40,50 T60,30 T80,40 T100,10 L100,100 L0,100 Z" fill="url(#grad)" opacity="0.2" />
-            <defs>
-              <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="100%" stopColor="transparent" />
-              </linearGradient>
-            </defs>
-          </svg>
+        {/* Recharts Implementation */}
+        <div className="h-80 w-full" style={{ marginLeft: '-15px' }}> {/* Slight negative margin to align Y-axis text perfectly */}
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData[activeFilter]} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <XAxis 
+                dataKey="date" 
+                stroke="#6b7280" 
+                fontSize={12} 
+                tickLine={false} 
+                axisLine={false} 
+                dy={10} 
+              />
+              <YAxis 
+                domain={['auto', 'auto']} 
+                stroke="#6b7280" 
+                fontSize={12} 
+                tickLine={false} 
+                axisLine={false} 
+                tickFormatter={(val) => `$${val >= 1000 ? (val/1000).toFixed(1) + 'k' : val}`}
+                width={80}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '5 5' }} />
+              <Area 
+                type="monotone" 
+                dataKey="balance" 
+                stroke="#3b82f6" 
+                strokeWidth={3} 
+                fillOpacity={1} 
+                fill="url(#colorBalance)" 
+                animationDuration={1000} // Smooth transition when switching filters
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
